@@ -1,0 +1,11 @@
+{
+  "name": "gorest-api-tests",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "node run-all-tests.js"
+  },
+  "dependencies": {
+    "newman": "^6.1.0",
+    "newman-reporter-htmlextra": "^1.22.0"
+  }
+}
