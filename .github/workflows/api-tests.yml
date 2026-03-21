@@ -26,9 +26,12 @@ jobs:
         run: npm install
 
       - name: Run API Tests
-        env:
-          GOREST_TOKEN: ${{ secrets.GOREST_TOKEN }}
-        run: npm test
+        run: | 
+          newman run 01-Authentication-Validation.postman_collection.json \
+          --env-var "token=${{ secrets.GOREST_TOKEN }}" \ 
+          --reporters cli,json \ 
+          --reporter-json-export reports/results.json
+
 
       - name: TR screenshots
         uses: actions/upload-artifact@v4

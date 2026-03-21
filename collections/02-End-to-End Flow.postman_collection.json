@@ -1,0 +1,687 @@
+{
+  "info": {
+    "_postman_id": "6153119e-9367-41fa-9324-bf0659c92f30",
+    "name": "GoRest - End-to-End Flow",
+    "description": "Full user lifecycle: Create user → Create post → Create comment → Delete comment → Delete post → Delete user → Verify cleanup",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41661217"
+  },
+  "item": [
+    {
+      "name": "Step 1 - Create User",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set('newUserName', 'E2E Test');",
+              "pm.collectionVariables.set('newUserEmail', 'e2e_' + Date.now() + '@testmail.com');",
+              "pm.collectionVariables.set('newUserGender', 'male');",
+              "pm.collectionVariables.set('newUserStatus', 'active');"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Status code is 201 Created', () => {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Response has required user fields', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('id');",
+              "    pm.expect(json).to.have.property('name');",
+              "    pm.expect(json).to.have.property('email');",
+              "    pm.expect(json).to.have.property('gender');",
+              "    pm.expect(json).to.have.property('status');",
+              "});",
+              "",
+              "pm.test('Created user data matches request payload', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.name).to.eql('E2E Test');",
+              "    pm.expect(json.gender).to.eql('male');",
+              "    pm.expect(json.status).to.eql('active');",
+              "});",
+              "",
+              "const userId = pm.response.json().id;",
+              "pm.environment.set(\"userId\", userId);",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"{{newUserName}}\",\n  \"email\": \"{{newUserEmail}}\",\n  \"gender\": \"{{newUserGender}}\",\n  \"status\": \"{{newUserStatus}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step 2 - Create Post for User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Status code is 201 Created', () => {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Response has required post fields', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('id');",
+              "    pm.expect(json).to.have.property('user_id');",
+              "    pm.expect(json).to.have.property('title');",
+              "    pm.expect(json).to.have.property('body');",
+              "});",
+              "",
+              "pm.test('Post fields have correct types', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.id).to.be.a('number');",
+              "    pm.expect(json.user_id).to.be.a('number');",
+              "    pm.expect(json.title).to.be.a('string');",
+              "    pm.expect(json.body).to.be.a('string');",
+              "});",
+              "",
+              "pm.test('Post is linked to the created user', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.user_id).to.eql(pm.environment.get('userId'));",
+              "});",
+              "",
+              "const post_id = pm.response.json().id;",
+              "pm.environment.set(\"postId\",post_id)"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"E2E Post\",\n  \"body\": \"End-to-end test flow.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users/{{userId}}/posts",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "{{userId}}",
+            "posts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step 3 - Create Comment on Post",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Status code is 201 Created', () => {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Response has required comment fields', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('id');",
+              "    pm.expect(json).to.have.property('post_id');",
+              "    pm.expect(json).to.have.property('name');",
+              "    pm.expect(json).to.have.property('email');",
+              "    pm.expect(json).to.have.property('body');",
+              "});",
+              "",
+              "pm.test('Comment fields have correct types', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.id).to.be.a('number');",
+              "    pm.expect(json.post_id).to.be.a('number');",
+              "    pm.expect(json.name).to.be.a('string');",
+              "    pm.expect(json.email).to.be.a('string');",
+              "    pm.expect(json.body).to.be.a('string');",
+              "});",
+              "",
+              "pm.test('Comment is linked to the in step 2', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json.post_id).to.eql(pm.environment.get('postId'));",
+              "});",
+              "",
+              "const comment_id = pm.response.json().id;",
+              "pm.environment.set(\"commentId\",comment_id)"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        },
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"E2E Commenter\",\n  \"email\": \"commenter_e2e@testmail.com\",\n  \"body\": \"This is an end-to-end test comment.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{postId}}/comments",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts",
+            "{{postId}}",
+            "comments"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step 4 - Delete Comment",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Status code is 204 No Content', () => {",
+              "    pm.response.to.have.status(204);",
+              "});",
+              "",
+              "pm.test('Response body is empty on delete', () => {",
+              "    pm.expect(pm.response.text()).to.be.empty;",
+              "});",
+              ""
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/comments/{{commentId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "comments",
+            "{{commentId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step 5 - Verify Comment Deleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Status code is 404 Not Found after delete', () => {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Response has error message property', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('message');",
+              "    pm.expect(json.message).to.be.a('string').and.not.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/comments/{{commentId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "comments",
+            "{{commentId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step 6 - Delete Post",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Status code is 204 No Content', () => {",
+              "    pm.response.to.have.status(204);",
+              "});",
+              "",
+              "pm.test('Response body is empty on delete', () => {",
+              "    pm.expect(pm.response.text()).to.be.empty;",
+              "});",
+              "",
+              "console.log('Deleted postId:', pm.collectionVariables.get('postId'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{postId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts",
+            "{{postId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step 7 - Verify Post Deleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Status code is 404 Not Found after delete', () => {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('API not found message', () => {",
+              "    pm.expect(pm.response.json().message).to.eql(\"Resource not found\");",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Response has error message property', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('message');",
+              "    pm.expect(json.message).to.be.a('string').and.not.empty;",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/posts/{{postId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "posts",
+            "{{postId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step 8 - Delete User",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Status code is 204 No Content', () => {",
+              "    pm.response.to.have.status(204);",
+              "});",
+              "",
+              "pm.test('Response body is empty on delete', () => {",
+              "    pm.expect(pm.response.text()).to.be.empty;",
+              "});",
+              "",
+              "console.log('Deleted userId:', pm.collectionVariables.get('userId'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/{{userId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Step 9 - Verify User Deleted",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Response time is under 2000ms', () => {",
+              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+              "});",
+              "",
+              "pm.test('Status code is 404 Not Found after delete', () => {",
+              "    pm.response.to.have.status(404);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Response has error message property', () => {",
+              "    const json = pm.response.json();",
+              "    pm.expect(json).to.have.property('message');",
+              "    pm.expect(json.message).to.equal(\"Resource not found\");",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/{{userId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "{{userId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "newUserName",
+      "value": ""
+    },
+    {
+      "key": "newUserEmail",
+      "value": ""
+    },
+    {
+      "key": "newUserGender",
+      "value": ""
+    },
+    {
+      "key": "newUserStatus",
+      "value": ""
+    },
+    {
+      "key": "commentId",
+      "value": ""
+    }
+  ]
+}

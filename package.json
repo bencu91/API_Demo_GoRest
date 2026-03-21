@@ -2,7 +2,7 @@
   "name": "gorest-api-tests",
   "version": "1.0.0",
   "scripts": {
-    "test": "node run-all-tests.js"
+    "test": "node runner.js"
   },
   "dependencies": {
     "newman": "^6.1.0",
