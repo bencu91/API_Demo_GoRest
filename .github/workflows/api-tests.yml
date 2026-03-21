@@ -1,22 +1,39 @@
-name: API Tests
+name: GoRest API Test Suite
+
 on:
   push:
-    branches: [main, develop]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  test:
+  api-tests:
     runs-on: ubuntu-latest
+    
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '18'
-      - run: npm install
-      - run: npm test
-      - uses: actions/upload-artifact@v3
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run API Tests
+        env:
+          GOREST_TOKEN: ${{ secrets.GOREST_TOKEN }}
+        run: npm test
+
+      - name: TR screenshots
+        uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: allure-report
-          path: reports/allure-results
+          name: test-results
+          path: reports/
+          retention-days: 30
