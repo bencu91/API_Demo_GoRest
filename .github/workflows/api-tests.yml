@@ -35,8 +35,9 @@ jobs:
           newman run "collections/03-CI-Environment-Check.postman_collection.json" \
           --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
-          --reporters cli,json \
-          --reporter-json-export reports/report-ci-check.json
+          --reporters cli,json,htmlextra \
+          --reporter-json-export reports/report-ci-check.json \
+          --reporter-htmlextra-export reports/report-ci-check.html
 
       - name: TR screenshots
         uses: actions/upload-artifact@v4
