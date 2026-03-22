@@ -15,10 +15,10 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: '20'
 
@@ -40,7 +40,7 @@ jobs:
           --reporter-htmlextra-export reports/report-ci-check.html
 
       - name: TR screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         if: always()
         with:
           name: Cloud-results
@@ -54,10 +54,10 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: '20'
 
@@ -75,12 +75,11 @@ jobs:
           --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
           --reporters cli,json \
-          --reporter-json-export reports/report-auth.json \
-          --suppress-exit-code
+          --reporter-json-export reports/report-auth.json
 
 
       - name: TR screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         if: always()
         with:
           name: Auth-validation-test-results
@@ -95,10 +94,10 @@ jobs:
     
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: '20'
 
@@ -116,11 +115,10 @@ jobs:
           --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
           --reporters cli,json \
-          --reporter-json-export reports/report-e2e.json \
-          --suppress-exit-code
+          --reporter-json-export reports/report-e2e.json
 
       - name: TR screenshots
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         if: always()
         with:
           name: E2E-test-results
