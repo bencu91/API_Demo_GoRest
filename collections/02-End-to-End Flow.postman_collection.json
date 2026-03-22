@@ -436,7 +436,7 @@
               "    pm.expect(pm.response.text()).to.be.empty;",
               "});",
               "",
-              "console.log('Deleted postId:', pm.collectionVariables.get('postId'));"
+              "console.log('Deleted postId:', pm.environment.get('postId'));"
             ],
             "type": "text/javascript"
           }
@@ -548,7 +548,7 @@
               "    pm.expect(pm.response.text()).to.be.empty;",
               "});",
               "",
-              "console.log('Deleted userId:', pm.collectionVariables.get('userId'));"
+              "console.log('Deleted userId:', pm.environment.get('userId'));"
             ],
             "type": "text/javascript"
           }

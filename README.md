@@ -18,6 +18,12 @@ This is an API test automation framework built on top of the [GoRest](https://go
 ### GitHub Actions — Full Pipeline Flow
 ![GitHub Actions Flow](docs/github-flows.png)
 
+### CI Environment Check — Sample Reports
+These are real reports generated from the latest CI run. Open the HTML one in a browser for the full visual breakdown.
+
+- [report-ci-check.html](docs/report-ci-check.html) — Human-readable report with pass/fail status, response times, and request details
+- [report-ci-check.json](docs/report-ci-check.json) — Raw JSON output from Newman
+
 ---
 
 ## What's inside
@@ -134,9 +140,7 @@ API_framework/
 ├── reports/                              # Test output goes here (not tracked in git)
 ├── .github/workflows/
 │   └── api-tests.yml                     # CI/CD pipeline definition
-├── runner.js                             # The main runner script
-├── dockerfile
-└── docker-compose.yml
+└── runner.js                             # The main runner script
 ```
 
 ---
