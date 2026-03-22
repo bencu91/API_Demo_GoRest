@@ -25,13 +25,26 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run API Tests
-        run: | 
-          newman run 01-Authentication-Validation.postman_collection.json \
-          --env-var "token=${{ secrets.GOREST_TOKEN }}" \ 
-          --reporters cli,json \ 
-          --reporter-json-export reports/results.json
+      # Creates reports folder as folder doesn't exist.
+      - name: Create reports directory
+        run: mkdir -p reports
 
+      - name: Run API Tests
+        run: |
+          # Updated
+          newman run collections/01-Authentication-Validation.postman_collection.json \
+          --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
+          # Updated
+          --reporters cli,json \
+          # Updated
+          --reporter-json-export reports/report-auth.json
+
+          # Updated
+          newman run "collections/02-End-to-End Flow.postman_collection.json" \
+          --environment environments/devGoRest.postman_environment.json \
+          --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
+          --reporters cli,json \
+          --reporter-json-export reports/report-e2e.json
 
       - name: TR screenshots
         uses: actions/upload-artifact@v4
