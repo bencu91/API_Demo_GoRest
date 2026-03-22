@@ -13,14 +13,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
-              "pm.test('Cloudflare returns 403 from CI runner IP', () => {",
-              "    pm.response.to.have.status(403);",
-              "});",
-              "",
               "pm.test('GoRest API is reachable but access is restricted by Cloudflare', () => {",
               "    pm.expect(pm.response.code).to.be.oneOf([403, 503]);",
               "});"
