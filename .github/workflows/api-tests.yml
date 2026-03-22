@@ -32,7 +32,7 @@ jobs:
       - name: Run cloudfare check 
         run: |
 
-          newman run "collections/03-CI-Environment-Check.postman_collection.json" \
+          npx newman run "collections/03-CI-Environment-Check.postman_collection.json" \
           --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
           --reporters cli,json,htmlextra \
