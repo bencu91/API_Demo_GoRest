@@ -85,8 +85,6 @@ API_framework/
 │   └── devGoRest.postman_environment.json  # Local environment config (keep your token here)
 ├── data/
 │   └── testData.json                     # Test data for data-driven test cases
-├── utils/
-│   └── helpers.js                        # Shared assertion helpers
 ├── reports/                              # Test output goes here (not tracked in git)
 ├── .github/workflows/
 │   └── api-tests.yml                     # CI/CD pipeline definition
