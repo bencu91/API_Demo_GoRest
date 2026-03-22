@@ -1,0 +1,33 @@
+name: Auto PR
+
+on:
+  push:
+    branches:
+      - updates/features
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Create Pull Request
+        run: |
+          gh pr create \
+            --base main \
+            --head updates/features \
+            --title "Automated PR: API workflow update" \
+            --body "This PR was created automatically after push to updates/features." \
+          || echo "PR already exists, skipping creation."
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Enable auto-merge
+        run: gh pr merge --auto --merge updates/features
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
