@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  api-tests:
+  Authentication-Validation:
     runs-on: ubuntu-latest
     
     steps:
@@ -29,17 +29,47 @@ jobs:
       - name: Create reports directory
         run: mkdir -p reports
 
-      - name: Run API Tests
+      - name: Run Auth Tests
         run: |
-          # Updated
+          
           newman run collections/01-Authentication-Validation.postman_collection.json \
+          --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
-          # Updated
           --reporters cli,json \
-          # Updated
           --reporter-json-export reports/report-auth.json
 
-          # Updated
+
+      - name: TR screenshots
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: Auth-validation-test-results
+          path: reports/
+          retention-days: 30
+
+
+  E2E-Flow:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      # Creates reports folder as folder doesn't exist.
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Run E2E tests
+        run: |
+
           newman run "collections/02-End-to-End Flow.postman_collection.json" \
           --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
@@ -50,6 +80,6 @@ jobs:
         uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: test-results
+          name: E2E-test-results
           path: reports/
           retention-days: 30
