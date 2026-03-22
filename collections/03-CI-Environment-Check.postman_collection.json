@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "ci-environment-check-001",
     "name": "GoRest - CI Environment Check",
-    "description": "This collection is designed to run in CI only. It validates that GoRest's Cloudflare protection is active and behaving as expected from a cloud runner IP. All assertions here are intentional — a 403 with an HTML challenge page is the correct and expected response from this environment.",
+    "description": "While running the other test collections in CI, I noticed they were all failing with a 403 error. After some investigation I found that GoRest blocks automated requests coming from cloud servers like GitHub Actions — this is a security layer called Cloudflare. As a workaround, I created this collection to intentionally validate that block, so the pipeline has at least one job that passes and documents the known limitation.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
