@@ -1,0 +1,504 @@
+{
+  "info": {
+    "_postman_id": "9f3fd6e2-03f5-4324-b24e-aae57f9329d6",
+    "name": "GoRest - Negative Validation",
+    "description": "Validates API contract boundaries on POST /users. Each scenario sends an invalid or incomplete request and asserts that the API returns 422 with a structured error response identifying the problematic field.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "41661217"
+  },
+  "item": [
+    {
+      "name": "Validation - Missing Name Field",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 422 Unprocessable Entity', () => {",
+              "    pm.response.to.have.status(422);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Error response targets the name field', () => {",
+              "    const errors = pm.response.json();",
+              "    pm.expect(errors).to.be.an('array').and.not.empty;",
+              "    const nameError = errors.find(e => e.field === 'name');",
+              "    pm.expect(nameError).to.exist;",
+              "    pm.expect(nameError.message).to.be.a('string').and.not.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"missing_name@testmail.com\",\n  \"gender\": \"male\",\n  \"status\": \"active\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Validation - Invalid Gender Value",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 422 Unprocessable Entity', () => {",
+              "    pm.response.to.have.status(422);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Error response targets the gender field', () => {",
+              "    const errors = pm.response.json();",
+              "    pm.expect(errors).to.be.an('array').and.not.empty;",
+              "    const genderError = errors.find(e => e.field === 'gender');",
+              "    pm.expect(genderError).to.exist;",
+              "    pm.expect(genderError.message).to.be.a('string').and.not.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Validation Test\",\n  \"email\": \"invalid_gender@testmail.com\",\n  \"gender\": \"unknown\",\n  \"status\": \"active\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Validation - Invalid Email Format",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 422 Unprocessable Entity', () => {",
+              "    pm.response.to.have.status(422);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Error response targets the email field', () => {",
+              "    const errors = pm.response.json();",
+              "    pm.expect(errors).to.be.an('array').and.not.empty;",
+              "    const emailError = errors.find(e => e.field === 'email');",
+              "    pm.expect(emailError).to.exist;",
+              "    pm.expect(emailError.message).to.be.a('string').and.not.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Validation Test\",\n  \"email\": \"not-a-valid-email\",\n  \"gender\": \"male\",\n  \"status\": \"active\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Validation - Duplicate Email (Step A: Create User)",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "pm.collectionVariables.set('duplicateEmail', 'duplicate_' + Date.now() + '@testmail.com');"
+            ],
+            "type": "text/javascript"
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 201 Created', () => {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "",
+              "const duplicateUserId = pm.response.json().id;",
+              "pm.collectionVariables.set('duplicateUserId', duplicateUserId);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Duplicate User\",\n  \"email\": \"{{duplicateEmail}}\",\n  \"gender\": \"male\",\n  \"status\": \"active\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Validation - Duplicate Email (Step B: Expect 422)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 422 Unprocessable Entity', () => {",
+              "    pm.response.to.have.status(422);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Error response targets the email field for duplicate', () => {",
+              "    const errors = pm.response.json();",
+              "    pm.expect(errors).to.be.an('array').and.not.empty;",
+              "    const emailError = errors.find(e => e.field === 'email');",
+              "    pm.expect(emailError).to.exist;",
+              "    pm.expect(emailError.message).to.be.a('string').and.not.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Duplicate User\",\n  \"email\": \"{{duplicateEmail}}\",\n  \"gender\": \"male\",\n  \"status\": \"active\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Validation - Duplicate Email (Step C: Cleanup)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 204 No Content', () => {",
+              "    pm.response.to.have.status(204);",
+              "});",
+              "",
+              "pm.test('Response body is empty on delete', () => {",
+              "    pm.expect(pm.response.text()).to.be.empty;",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/users/{{duplicateUserId}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users",
+            "{{duplicateUserId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Validation - Empty Body",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status code is 422 Unprocessable Entity', () => {",
+              "    pm.response.to.have.status(422);",
+              "});",
+              "",
+              "pm.test('Response is valid JSON', () => {",
+              "    pm.response.to.be.json;",
+              "});",
+              "",
+              "pm.test('Content-Type is application/json', () => {",
+              "    pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
+              "});",
+              "",
+              "pm.test('Error response is a non-empty array of validation errors', () => {",
+              "    const errors = pm.response.json();",
+              "    pm.expect(errors).to.be.an('array').and.not.empty;",
+              "    errors.forEach(e => {",
+              "        pm.expect(e).to.have.property('field');",
+              "        pm.expect(e).to.have.property('message');",
+              "    });",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "auth": {
+          "type": "bearer",
+          "bearer": [
+            {
+              "key": "token",
+              "value": "{{authToken}}",
+              "type": "string"
+            }
+          ]
+        },
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/users",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "response": []
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Runs after every request in this collection",
+          "pm.test('Response time is under 2000ms', () => {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "duplicateEmail",
+      "value": ""
+    },
+    {
+      "key": "duplicateUserId",
+      "value": ""
+    }
+  ]
+}

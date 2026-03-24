@@ -33,14 +33,14 @@ These are real reports generated from the latest CI run. Open the HTML one in a 
 | [Newman](https://github.com/postmanlabs/newman) | Runs Postman collections from the command line |
 | [Postman Collections](https://www.postman.com/) | Where all the test cases and assertions live |
 | [GitHub Actions](https://github.com/features/actions) | Runs the tests automatically on push and PR |
-| Node.js 18+ | Runtime |
+| Node.js 20+ | Runtime |
 
 ---
 
 ## Before you start
 
 You'll need:
-- Node.js 18 or higher
+- Node.js 20 or higher
 - A GoRest API token
 
 **How to get your GoRest token:**
@@ -131,11 +131,12 @@ API_framework/
 ├── collections/                          # Test collections, run in filename order
 │   ├── 01-Authentication-Validation.postman_collection.json
 │   ├── 02-End-to-End Flow.postman_collection.json
-│   └── 03-CI-Environment-Check.postman_collection.json
+│   ├── 03-CI-Environment-Check.postman_collection.json
+│   └── 04-Negative-Validation.postman_collection.json
 ├── environments/
 │   └── devGoRest.postman_environment.json  # Local environment config (keep your token here)
 ├── data/
-│   └── testData.json                     # Test data for data-driven test cases
+│   └── InputTestData.csv                 # Data-driven test input for collection 02
 ├── docs/                                 # Screenshots and supporting assets
 ├── reports/                              # Test output goes here (not tracked in git)
 ├── .github/workflows/
@@ -167,7 +168,24 @@ Walks through the full lifecycle of a user and their content, then cleans everyt
 | 8 | Delete the user | 204, empty body |
 | 9 | Confirm user is gone | 404, error message present |
 
-Every step also checks that the response comes back under 2000ms, is valid JSON, and has the right Content-Type header.
+Response time under 2000ms is enforced via a collection-level script that runs automatically after every request. JSON structure and Content-Type are validated per request, since DELETE responses return empty bodies and those assertions don't apply there.
+
+### 04 — Negative Validation
+Tests the API's contract boundaries by sending invalid or incomplete requests to `POST /users` and asserting that the API returns `422 Unprocessable Entity` with a structured error response identifying the problematic field.
+
+| Scenario | What it sends | What it checks |
+|---|---|---|
+| Missing name field | Request without `name` | 422, error targets `name` field |
+| Invalid gender value | `gender: "unknown"` | 422, error targets `gender` field |
+| Invalid email format | `email: "not-a-valid-email"` | 422, error targets `email` field |
+| Duplicate email | Same email submitted twice | 422 on second attempt, error targets `email` field |
+| Empty body | `{}` | 422, all required field errors present |
+
+The duplicate email scenario is a two-step test — it creates a user first using a dynamically generated email (`Date.now()`), then attempts to register again with the same address. A cleanup step deletes the created user afterwards.
+
+---
 
 ### 03 — CI Environment Check
-A workaround collection created after discovering that GoRest blocks requests from GitHub Actions runners. It validates the Cloudflare 403 response intentionally — a passing result here confirms the known restriction is active. This collection runs in CI only and generates an HTML report as an artifact.
+While setting up the CI pipeline I ran into a problem — collections 01 and 02 were consistently failing with 403 errors in GitHub Actions, even though everything worked fine locally. Turns out GoRest sits behind Cloudflare, which blocks requests from cloud server IPs, and Actions runners fall into that category.
+
+To handle this I created collection 03, which expects the 403 and passes when the block is active — keeping the pipeline green instead of leaving unexplained failures. It also acts as a gate: the job runs with `continue-on-error: true` and writes its result to a GitHub Actions output variable. Collections 01 and 02 read that variable and only run if the API is actually reachable. This way the conditional logic is explicit and readable rather than relying on job failure status as a signal.

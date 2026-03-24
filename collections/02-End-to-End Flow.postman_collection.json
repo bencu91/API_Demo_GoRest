@@ -14,10 +14,10 @@
           "listen": "prerequest",
           "script": {
             "exec": [
-              "pm.collectionVariables.set('newUserName', 'E2E Test');",
-              "pm.collectionVariables.set('newUserEmail', 'e2e_' + Date.now() + '@testmail.com');",
-              "pm.collectionVariables.set('newUserGender', 'male');",
-              "pm.collectionVariables.set('newUserStatus', 'active');"
+              "pm.collectionVariables.set('newUserName', pm.iterationData.get('name'));",
+              "pm.collectionVariables.set('newUserEmail', pm.iterationData.get('email'));",
+              "pm.collectionVariables.set('newUserGender', pm.iterationData.get('gender'));",
+              "pm.collectionVariables.set('newUserStatus', pm.iterationData.get('status'));"
             ],
             "type": "text/javascript",
             "packages": {},
@@ -28,10 +28,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
               "pm.test('Status code is 201 Created', () => {",
               "    pm.response.to.have.status(201);",
               "});",
@@ -55,9 +51,9 @@
               "",
               "pm.test('Created user data matches request payload', () => {",
               "    const json = pm.response.json();",
-              "    pm.expect(json.name).to.eql('E2E Test');",
-              "    pm.expect(json.gender).to.eql('male');",
-              "    pm.expect(json.status).to.eql('active');",
+              "    pm.expect(json.name).to.eql(pm.iterationData.get('name'));",
+              "    pm.expect(json.gender).to.eql(pm.iterationData.get('gender')); ",
+              "    pm.expect(json.status).to.eql(pm.iterationData.get('status'));",
               "});",
               "",
               "const userId = pm.response.json().id;",
@@ -116,10 +112,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
               "pm.test('Status code is 201 Created', () => {",
               "    pm.response.to.have.status(201);",
               "});",
@@ -210,10 +202,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
               "pm.test('Status code is 201 Created', () => {",
               "    pm.response.to.have.status(201);",
               "});",
@@ -317,10 +305,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
               "pm.test('Status code is 204 No Content', () => {",
               "    pm.response.to.have.status(204);",
               "});",
@@ -369,10 +353,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
               "pm.test('Status code is 404 Not Found after delete', () => {",
               "    pm.response.to.have.status(404);",
               "});",
@@ -424,10 +404,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
               "pm.test('Status code is 204 No Content', () => {",
               "    pm.response.to.have.status(204);",
               "});",
@@ -475,10 +451,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
               "pm.test('Status code is 404 Not Found after delete', () => {",
               "    pm.response.to.have.status(404);",
               "});",
@@ -536,10 +508,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
               "pm.test('Status code is 204 No Content', () => {",
               "    pm.response.to.have.status(204);",
               "});",
@@ -587,10 +555,6 @@
           "listen": "test",
           "script": {
             "exec": [
-              "pm.test('Response time is under 2000ms', () => {",
-              "    pm.expect(pm.response.responseTime).to.be.below(2000);",
-              "});",
-              "",
               "pm.test('Status code is 404 Not Found after delete', () => {",
               "    pm.response.to.have.status(404);",
               "});",
@@ -657,7 +621,10 @@
         "packages": {},
         "requests": {},
         "exec": [
-          ""
+          "// Runs after every request in this collection",
+          "pm.test('Response time is under 2000ms', () => {",
+          "    pm.expect(pm.response.responseTime).to.be.below(2000);",
+          "});"
         ]
       }
     }

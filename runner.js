@@ -26,11 +26,17 @@ function runNextCollection() {
   const collection = collections[currentIndex];
   console.log('\nRunning: ' + path.basename(collection) + '\n');
 
-  newman.run({
+  const options = {
     collection: collection,
     environment: environment,
     reporters: ['cli']
-  }, function (err) {
+  };
+
+  if (path.basename(collection).startsWith('02-')) {
+    options.iterationData = './data/InputTestData.csv';
+  }
+
+  newman.run(options, function (err) {
     if (err) {
       console.error('\nError in ' + path.basename(collection) + ':', err);
       process.exit(1);

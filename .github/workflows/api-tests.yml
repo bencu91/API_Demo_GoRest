@@ -12,7 +12,9 @@ on:
 jobs:
   CI-Environment-Cloudflare-check:
     runs-on: ubuntu-latest
-    
+    outputs:
+      api_accessible: ${{ steps.set-output.outputs.accessible }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4.2.2
@@ -29,7 +31,11 @@ jobs:
       - name: Create reports directory
         run: mkdir -p reports
 
-      - name: Run cloudfare check 
+      # Collection 03 passes when API is blocked (403/503), fails when accessible (200).
+      # continue-on-error keeps the job alive and saves got failure value
+      - name: Run cloudfare check
+        id: cf-check
+        continue-on-error: true
         run: |
 
           npx newman run "collections/03-CI-Environment-Check.postman_collection.json" \
@@ -38,6 +44,18 @@ jobs:
           --reporters cli,json,htmlextra \
           --reporter-json-export reports/report-ci-check.json \
           --reporter-htmlextra-export reports/report-ci-check.html
+
+      #Verify Collection 03 response and set creates $GITHUB_OUTPUT
+      - name: Set API accessibility output
+        id: set-output
+        run: |
+          if [ "${{ steps.cf-check.outcome }}" = "failure" ]; then
+            echo "accessible=true" >> $GITHUB_OUTPUT
+            echo "API is accessible — proceeding with tests"
+          else
+            echo "accessible=false" >> $GITHUB_OUTPUT
+            echo "::warning::GoRest blocked by Cloudflare — skipping API tests"
+          fi
 
       - name: TR screenshots
         uses: actions/upload-artifact@v4.6.2
@@ -49,7 +67,7 @@ jobs:
 
   Authentication-Validation:
     needs: CI-Environment-Cloudflare-check
-    if: failure() 
+    if: needs.CI-Environment-Cloudflare-check.outputs.api_accessible == 'true'
     runs-on: ubuntu-latest
     
     steps:
@@ -89,7 +107,7 @@ jobs:
 
   E2E-Flow:
     needs: CI-Environment-Cloudflare-check
-    if: failure() 
+    if: needs.CI-Environment-Cloudflare-check.outputs.api_accessible == 'true'
     runs-on: ubuntu-latest
     
     steps:
@@ -114,6 +132,7 @@ jobs:
           newman run "collections/02-End-to-End Flow.postman_collection.json" \
           --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
+          --iteration-data data/InputTestData.csv \
           --reporters cli,json \
           --reporter-json-export reports/report-e2e.json
 
