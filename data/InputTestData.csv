@@ -1,0 +1,5 @@
+﻿name,email,gender,status
+E2E Test,test@email.com,male,active
+E2E Dani,dani_21@email.com,female,active
+E2E Reed,test_23@email.com,male,inactive
+E2E Sue,sue@email.com,female,inactive
