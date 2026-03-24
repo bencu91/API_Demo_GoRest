@@ -32,7 +32,7 @@ function runNextCollection() {
     reporters: ['cli']
   };
 
-  if (path.basename(collection).startsWith('02-')) {
+  if (path.basename(collection).toLowerCase().includes('end-to-end')) {
     options.iterationData = './data/InputTestData.csv';
   }
 

@@ -38,7 +38,7 @@ jobs:
         continue-on-error: true
         run: |
 
-          npx newman run "collections/03-CI-Environment-Check.postman_collection.json" \
+          npx newman run "collections/01-CI-Environment-Check.postman_collection.json" \
           --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
           --reporters cli,json,htmlextra \
@@ -89,7 +89,7 @@ jobs:
       - name: Run Auth Tests
         run: |
           
-          newman run collections/01-Authentication-Validation.postman_collection.json \
+          newman run collections/02-Authentication-Validation.postman_collection.json \
           --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
           --reporters cli,json \
@@ -129,7 +129,7 @@ jobs:
       - name: Run E2E tests
         run: |
 
-          newman run "collections/02-End-to-End Flow.postman_collection.json" \
+          newman run "collections/03-End-to-End Flow.postman_collection.json" \
           --environment environments/devGoRest.postman_environment.json \
           --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
           --iteration-data data/InputTestData.csv \
@@ -141,6 +141,44 @@ jobs:
         if: always()
         with:
           name: E2E-test-results
+          path: reports/
+          retention-days: 30
+
+  Negative-Validation:
+    needs: CI-Environment-Cloudflare-check
+    if: needs.CI-Environment-Cloudflare-check.outputs.api_accessible == 'true'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.2.2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4.4.0
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      # Creates reports folder as folder doesn't exist.
+      - name: Create reports directory
+        run: mkdir -p reports
+
+      - name: Run Negative Validation tests
+        run: |
+
+          newman run "collections/04-Negative-Validation.postman_collection.json" \
+          --environment environments/devGoRest.postman_environment.json \
+          --env-var "authToken=${{ secrets.GOREST_TOKEN }}" \
+          --reporters cli,json \
+          --reporter-json-export reports/report-negative.json
+
+      - name: TR screenshots
+        uses: actions/upload-artifact@v4.6.2
+        if: always()
+        with:
+          name: Negative-validation-test-results
           path: reports/
           retention-days: 30
 
