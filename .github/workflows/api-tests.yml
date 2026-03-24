@@ -31,7 +31,7 @@ jobs:
       - name: Create reports directory
         run: mkdir -p reports
 
-      # Collection 03 passes when API is blocked (403/503), fails when accessible (200).
+      # Collection 01 passes when API is blocked (403/503), fails when accessible (200).
       # continue-on-error keeps the job alive and saves got failure value
       - name: Run cloudfare check
         id: cf-check

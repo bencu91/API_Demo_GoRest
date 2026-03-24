@@ -24,7 +24,7 @@ This is an API test automation framework built on top of the [GoRest](https://go
 ### CI Environment Check — Sample Reports
 These are real reports generated from the latest CI run. Open the HTML one in a browser for the full visual breakdown.
 
-- [report-ci-check.html](docs/report-ci-check.html) — Human-readable report with pass/fail status, response times, and request details
+- [report-ci-check.html](docs/report-ci-check.html) — HTML report with pass/fail status, response times, and request details
 - [report-ci-check.json](docs/report-ci-check.json) — Raw JSON output from Newman
 
 ---
@@ -115,7 +115,7 @@ After each run, test reports are saved as downloadable artifacts and kept for 30
 | `E2E-test-results` | Collection 03 results | JSON |
 | `Negative-validation-test-results` | Collection 04 results | JSON |
 
-The `Cloud-results` artifact includes both a JSON and a human-readable HTML report. Sample versions of both are available in the `docs/` folder — [report-ci-check.html](docs/report-ci-check.html) and [report-ci-check.json](docs/report-ci-check.json) — so you can see what the output looks like without having to run the pipeline.
+The `Cloud-results` artifact includes both a JSON and an HTML report. Sample versions of both are available in the `docs/` folder — [report-ci-check.html](docs/report-ci-check.html) and [report-ci-check.json](docs/report-ci-check.json) — so you can see what the output looks like without having to run the pipeline.
 
 ---
 
